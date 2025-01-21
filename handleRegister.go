@@ -31,7 +31,7 @@ func handleRegister(s *State, cmd Command) error {
 		return fmt.Errorf("unable to handle login for a new user, %w", err)
 	}
 
-	fmt.Printf("user successfully created: %s\n", s.cfg.CurrentUserName)
+	fmt.Printf("User successfully created: %s\n", s.cfg.CurrentUserName)
 
 	return nil
 }

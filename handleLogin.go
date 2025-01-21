@@ -27,7 +27,7 @@ func handleLogin(s *State, cmd Command) error {
 		return fmt.Errorf("unable to handle login with username provided, %w", err)
 	}
 
-	fmt.Printf("user successfully swithed: %s\n", s.cfg.CurrentUserName)
+	fmt.Printf("User successfully swithed: %s\n", s.cfg.CurrentUserName)
 
 	return nil
 }

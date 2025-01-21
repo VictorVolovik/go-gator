@@ -40,6 +40,7 @@ func main() {
 
 	commands.register("login", handleLogin)
 	commands.register("register", handleRegister)
+	commands.register("reset", handleReset)
 
 	args := os.Args
 
