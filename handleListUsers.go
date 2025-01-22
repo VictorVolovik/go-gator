@@ -17,7 +17,10 @@ func handleListUsers(s *State, cmd Command) error {
 
 	if len(users) == 0 {
 		fmt.Println("No users available")
+		return nil
 	}
+
+	fmt.Println("Users:")
 
 	for _, user := range users {
 		str := fmt.Sprintf("* %s", user.Name)

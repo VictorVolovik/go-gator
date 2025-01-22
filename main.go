@@ -43,6 +43,7 @@ func main() {
 	commands.register("users", handleListUsers)
 	commands.register("agg", handleAggregation)
 	commands.register("addfeed", handleAddFeed)
+	commands.register("feeds", handleListFeeds)
 
 	args := os.Args
 
