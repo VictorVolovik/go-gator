@@ -42,6 +42,7 @@ func main() {
 	commands.register("reset", handleReset)
 	commands.register("users", handleListUsers)
 	commands.register("agg", handleAggregation)
+	commands.register("addfeed", handleAddFeed)
 
 	args := os.Args
 
