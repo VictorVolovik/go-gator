@@ -8,7 +8,7 @@ VALUES (
 )
 RETURNING *;
 
--- name: GetUser :one
+-- name: GetUserByName :one
 SELECT
     id,
     created_at,
@@ -16,6 +16,14 @@ SELECT
     name
 FROM users
 WHERE name = $1;
+
+-- name: GetAllUsers :many
+SELECT
+    id,
+    created_at,
+    updated_at,
+    name
+FROM users;
 
 -- name: DeleteUsers :exec
 DELETE FROM users;

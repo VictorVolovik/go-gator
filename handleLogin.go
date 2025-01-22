@@ -14,7 +14,7 @@ func handleLogin(s *State, cmd Command) error {
 
 	username := cmd.args[0]
 
-	user, err := s.db.GetUser(context.Background(), username)
+	user, err := s.db.GetUserByName(context.Background(), username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return fmt.Errorf("user not found")

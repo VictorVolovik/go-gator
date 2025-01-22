@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 
@@ -41,6 +40,7 @@ func main() {
 	commands.register("login", handleLogin)
 	commands.register("register", handleRegister)
 	commands.register("reset", handleReset)
+	commands.register("users", handleListUsers)
 
 	args := os.Args
 
@@ -61,8 +61,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println("Gator config successfully set:")
-	fmt.Printf("database url: %s\n", appState.cfg.DbURL)
-	fmt.Printf("username: %s\n", appState.cfg.CurrentUserName)
 }
