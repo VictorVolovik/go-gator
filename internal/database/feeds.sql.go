@@ -63,7 +63,7 @@ SELECT
     feeds.name,
     feeds.url,
     feeds.user_id,
-    users.name AS username
+    users.name AS user_name
 FROM feeds
 INNER JOIN users
     ON feeds.user_id = users.id
@@ -76,7 +76,7 @@ type GetAllFeedsRow struct {
 	Name      string
 	Url       string
 	UserID    uuid.UUID
-	Username  string
+	UserName  string
 }
 
 func (q *Queries) GetAllFeeds(ctx context.Context) ([]GetAllFeedsRow, error) {
@@ -95,7 +95,7 @@ func (q *Queries) GetAllFeeds(ctx context.Context) ([]GetAllFeedsRow, error) {
 			&i.Name,
 			&i.Url,
 			&i.UserID,
-			&i.Username,
+			&i.UserName,
 		); err != nil {
 			return nil, err
 		}
@@ -108,4 +108,36 @@ func (q *Queries) GetAllFeeds(ctx context.Context) ([]GetAllFeedsRow, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const getFeedByUrl = `-- name: GetFeedByUrl :one
+SELECT
+    id,
+    created_at,
+    updated_at,
+    name,
+    url
+FROM feeds
+WHERE url = $1
+`
+
+type GetFeedByUrlRow struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Name      string
+	Url       string
+}
+
+func (q *Queries) GetFeedByUrl(ctx context.Context, url string) (GetFeedByUrlRow, error) {
+	row := q.db.QueryRowContext(ctx, getFeedByUrl, url)
+	var i GetFeedByUrlRow
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.Url,
+	)
+	return i, err
 }

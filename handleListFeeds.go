@@ -25,7 +25,7 @@ func handleListFeeds(s *State, cmd Command) error {
 	for _, feed := range feeds {
 		fmt.Println("------")
 		fmt.Printf("Feed \"%s\" - %s\n", feed.Name, feed.Url)
-		fmt.Printf("Added by %s\n", feed.Username)
+		fmt.Printf("Added by %s\n", feed.UserName)
 	}
 
 	fmt.Println("------")
