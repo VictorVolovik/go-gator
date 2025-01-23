@@ -1,27 +1,18 @@
 package main
 
 import (
-	"VictorVolovik/go-gator/internal/database"
 	"context"
-	"database/sql"
-	"errors"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
+
+	"VictorVolovik/go-gator/internal/database"
 )
 
-func handleFollow(s *State, cmd Command) error {
+func handleFollow(s *State, cmd Command, user database.User) error {
 	if len(cmd.args) != 1 {
 		return fmt.Errorf("usage: %s <url>", cmd.name)
-	}
-
-	user, err := s.db.GetUserByName(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("current user not found")
-		}
-		return fmt.Errorf("unable to get current user info, %w", err)
 	}
 
 	feedUrl := cmd.args[0]

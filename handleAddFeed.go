@@ -2,27 +2,17 @@ package main
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"fmt"
 	"time"
 
-	"VictorVolovik/go-gator/internal/database"
-
 	"github.com/google/uuid"
+
+	"VictorVolovik/go-gator/internal/database"
 )
 
-func handleAddFeed(s *State, cmd Command) error {
+func handleAddFeed(s *State, cmd Command, user database.User) error {
 	if len(cmd.args) != 2 {
 		return fmt.Errorf("usage: %s <name> <url>", cmd.name)
-	}
-
-	user, err := s.db.GetUserByName(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("current user not found")
-		}
-		return fmt.Errorf("unable to get current user info, %w", err)
 	}
 
 	feedName := cmd.args[0]

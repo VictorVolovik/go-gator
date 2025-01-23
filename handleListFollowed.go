@@ -2,22 +2,14 @@ package main
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"fmt"
+
+	"VictorVolovik/go-gator/internal/database"
 )
 
-func handleListFollowed(s *State, cmd Command) error {
+func handleListFollowed(s *State, cmd Command, user database.User) error {
 	if len(cmd.args) > 0 {
 		return fmt.Errorf("usage: %s", cmd.name)
-	}
-
-	user, err := s.db.GetUserByName(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("current user not found")
-		}
-		return fmt.Errorf("unable to get current user info, %w", err)
 	}
 
 	feedFollows, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)

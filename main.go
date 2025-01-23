@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
 	"database/sql"
+	"errors"
+	"fmt"
 	"log"
 	"os"
 
@@ -42,10 +45,10 @@ func main() {
 	commands.register("reset", handleReset)
 	commands.register("users", handleListUsers)
 	commands.register("agg", handleAggregation)
-	commands.register("addfeed", handleAddFeed)
+	commands.register("addfeed", middlewareLoggedIn(handleAddFeed))
 	commands.register("feeds", handleListFeeds)
-	commands.register("follow", handleFollow)
-	commands.register("following", handleListFollowed)
+	commands.register("follow", middlewareLoggedIn(handleFollow))
+	commands.register("following", middlewareLoggedIn(handleListFollowed))
 
 	args := os.Args
 
@@ -65,5 +68,21 @@ func main() {
 	err = commands.run(&appState, command)
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func middlewareLoggedIn(handler func(s *State, cmd Command, user database.User) error) func(*State, Command) error {
+	return func(s *State, cmd Command) error {
+		user, err := s.db.GetUserByName(context.Background(), s.cfg.CurrentUserName)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return fmt.Errorf("current user not found")
+			}
+			return fmt.Errorf("unable to get current user info, %w", err)
+		}
+
+		handler(s, cmd, user)
+
+		return nil
 	}
 }
