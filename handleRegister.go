@@ -1,12 +1,8 @@
 package main
 
 import (
-	"VictorVolovik/go-gator/internal/database"
 	"context"
 	"fmt"
-	"time"
-
-	"github.com/google/uuid"
 )
 
 func handleRegister(s *State, cmd Command) error {
@@ -16,12 +12,7 @@ func handleRegister(s *State, cmd Command) error {
 
 	username := cmd.args[0]
 
-	_, err := s.db.CreateUser(context.Background(), database.CreateUserParams{
-		ID:        uuid.New(),
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
-		Name:      username,
-	})
+	_, err := s.db.CreateUser(context.Background(), username)
 	if err != nil {
 		return fmt.Errorf("unable to create user, %w", err)
 	}

@@ -2,14 +2,12 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"VictorVolovik/go-gator/internal/database"
 	"VictorVolovik/go-gator/internal/rss"
 )
 
@@ -54,14 +52,7 @@ func scrapeFeeds(s *State) error {
 		return fmt.Errorf("unable to get next feed to scrape, %w", err)
 	}
 
-	err = s.db.MarkFeedFetched(context.Background(), database.MarkFeedFetchedParams{
-		ID: nextFeed.ID,
-		LastFetchedAt: sql.NullTime{
-			Time:  time.Now().UTC(),
-			Valid: true,
-		},
-		UpdatedAt: time.Now().UTC(),
-	})
+	err = s.db.MarkFeedFetched(context.Background(), nextFeed.ID)
 	if err != nil {
 		return fmt.Errorf("failed to mark feed as fetched, %w", err)
 	}

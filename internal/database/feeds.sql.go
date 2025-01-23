@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,34 +15,24 @@ import (
 const createFeed = `-- name: CreateFeed :one
 INSERT INTO feeds (id, created_at, updated_at, name, url, user_id)
 VALUES (
+    gen_random_uuid(),
+    now(),
+    now(),
     $1,
     $2,
-    $3,
-    $4,
-    $5,
-    $6
+    $3
 )
 RETURNING id, created_at, updated_at, name, url, user_id, last_fetched_at
 `
 
 type CreateFeedParams struct {
-	ID        uuid.UUID
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Name      string
-	Url       string
-	UserID    uuid.UUID
+	Name   string
+	Url    string
+	UserID uuid.UUID
 }
 
 func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, error) {
-	row := q.db.QueryRowContext(ctx, createFeed,
-		arg.ID,
-		arg.CreatedAt,
-		arg.UpdatedAt,
-		arg.Name,
-		arg.Url,
-		arg.UserID,
-	)
+	row := q.db.QueryRowContext(ctx, createFeed, arg.Name, arg.Url, arg.UserID)
 	var i Feed
 	err := row.Scan(
 		&i.ID,
@@ -180,18 +169,12 @@ func (q *Queries) GetNextFeedToFetch(ctx context.Context) (GetNextFeedToFetchRow
 const markFeedFetched = `-- name: MarkFeedFetched :exec
 UPDATE feeds
 SET
-    last_fetched_at = $2,
-    updated_at = $3
+    last_fetched_at = now(),
+    updated_at = now()
 WHERE id = $1
 `
 
-type MarkFeedFetchedParams struct {
-	ID            uuid.UUID
-	LastFetchedAt sql.NullTime
-	UpdatedAt     time.Time
-}
-
-func (q *Queries) MarkFeedFetched(ctx context.Context, arg MarkFeedFetchedParams) error {
-	_, err := q.db.ExecContext(ctx, markFeedFetched, arg.ID, arg.LastFetchedAt, arg.UpdatedAt)
+func (q *Queries) MarkFeedFetched(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, markFeedFetched, id)
 	return err
 }

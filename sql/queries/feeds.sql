@@ -1,12 +1,12 @@
 -- name: CreateFeed :one
 INSERT INTO feeds (id, created_at, updated_at, name, url, user_id)
 VALUES (
+    gen_random_uuid(),
+    now(),
+    now(),
     $1,
     $2,
-    $3,
-    $4,
-    $5,
-    $6
+    $3
 )
 RETURNING *;
 
@@ -36,8 +36,8 @@ INNER JOIN users
 -- name: MarkFeedFetched :exec
 UPDATE feeds
 SET
-    last_fetched_at = $2,
-    updated_at = $3
+    last_fetched_at = now(),
+    updated_at = now()
 WHERE id = $1;
 
 -- name: GetNextFeedToFetch :one

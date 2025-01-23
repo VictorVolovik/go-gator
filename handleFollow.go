@@ -3,9 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"time"
-
-	"github.com/google/uuid"
 
 	"VictorVolovik/go-gator/internal/database"
 )
@@ -22,11 +19,8 @@ func handleFollow(s *State, cmd Command, user database.User) error {
 	}
 
 	feedFollow, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
-		ID:        uuid.New(),
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
-		UserID:    user.ID,
-		FeedID:    feed.ID,
+		UserID: user.ID,
+		FeedID: feed.ID,
 	})
 	if err != nil {
 		return fmt.Errorf("unable to follow feed, %w", err)
