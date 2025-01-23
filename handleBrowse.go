@@ -1,12 +1,13 @@
 package main
 
 import (
+	"VictorVolovik/go-gator/internal/database"
 	"context"
 	"fmt"
 	"strconv"
 )
 
-func handleBrowse(s *State, cmd Command) error {
+func handleBrowse(s *State, cmd Command, user database.User) error {
 	limit := 2
 
 	if len(cmd.args) == 1 {
@@ -19,9 +20,17 @@ func handleBrowse(s *State, cmd Command) error {
 		return fmt.Errorf("usage: %s <limit - optional>", cmd.name)
 	}
 
-	posts, err := s.db.GetPosts(context.Background(), int32(limit))
+	posts, err := s.db.GetPosts(context.Background(), database.GetPostsParams{
+		UserID: user.ID,
+		Limit:  int32(limit),
+	})
 	if err != nil {
 		return fmt.Errorf("failed to get posts, %w", err)
+	}
+
+	if len(posts) == 0 {
+		fmt.Println("No posts found")
+		return nil
 	}
 
 	fmt.Println("------")

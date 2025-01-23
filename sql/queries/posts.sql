@@ -16,14 +16,17 @@ RETURNING *;
 
 -- name: GetPosts :many
 SELECT
-    id,
-    created_at,
-    updated_at,
-    url,
-    title,
-    description,
-    published_at,
-    feed_id
+    posts.id,
+    posts.created_at,
+    posts.updated_at,
+    posts.url,
+    posts.title,
+    posts.description,
+    posts.published_at,
+    posts.feed_id
 FROM posts
-ORDER BY published_at DESC
-LIMIT $1;
+INNER JOIN feed_follows
+    ON posts.feed_id = feed_follows.feed_id
+WHERE feed_follows.user_id = $1
+ORDER BY posts.published_at DESC
+LIMIT $2;

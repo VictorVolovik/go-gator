@@ -42,11 +42,14 @@ WHERE id = $1;
 
 -- name: GetNextFeedToFetch :one
 SELECT
-    id,
-    created_at,
-    updated_at,
-    name,
-    url
+    feeds.id,
+    feeds.created_at,
+    feeds.updated_at,
+    feeds.name,
+    feeds.url
 FROM feeds
-ORDER BY last_fetched_at NULLS FIRST
+INNER JOIN feed_follows
+    ON feeds.id = feed_follows.feed_id
+WHERE feed_follows.user_id = $1
+ORDER BY feeds.last_fetched_at NULLS FIRST
 LIMIT 1;

@@ -44,13 +44,13 @@ func main() {
 	commands.register("register", handleRegister)
 	commands.register("reset", handleReset)
 	commands.register("users", handleListUsers)
-	commands.register("agg", handleAggregation)
+	commands.register("agg", middlewareLoggedIn(handleAggregation))
 	commands.register("addfeed", middlewareLoggedIn(handleAddFeed))
 	commands.register("feeds", handleListFeeds)
 	commands.register("follow", middlewareLoggedIn(handleFollow))
 	commands.register("following", middlewareLoggedIn(handleListFollowed))
 	commands.register("unfollow", middlewareLoggedIn(handleUnfollow))
-	commands.register("browse", handleBrowse)
+	commands.register("browse", middlewareLoggedIn(handleBrowse))
 
 	args := os.Args
 

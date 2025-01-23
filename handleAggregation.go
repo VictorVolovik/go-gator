@@ -10,9 +10,11 @@ import (
 
 	"VictorVolovik/go-gator/internal/database"
 	"VictorVolovik/go-gator/internal/rss"
+
+	"github.com/google/uuid"
 )
 
-func handleAggregation(s *State, cmd Command) error {
+func handleAggregation(s *State, cmd Command, user database.User) error {
 	if len(cmd.args) != 1 {
 		return fmt.Errorf("usage: %s <time_between_reqs>", cmd.name)
 	}
@@ -30,7 +32,7 @@ func handleAggregation(s *State, cmd Command) error {
 	ticker := time.NewTicker(timeBetweenReqs)
 	defer ticker.Stop()
 
-	if err := scrapeFeeds(s); err != nil {
+	if err := scrapeFeeds(s, user.ID); err != nil {
 		fmt.Printf("Error fetching feed: %v\n", err)
 	}
 
@@ -40,15 +42,15 @@ func handleAggregation(s *State, cmd Command) error {
 			fmt.Println("\nTerminating aggregation process...")
 			return nil
 		case <-ticker.C:
-			if err := scrapeFeeds(s); err != nil {
+			if err := scrapeFeeds(s, user.ID); err != nil {
 				fmt.Printf("Error fetching feed: %v\n", err)
 			}
 		}
 	}
 }
 
-func scrapeFeeds(s *State) error {
-	nextFeed, err := s.db.GetNextFeedToFetch(context.Background())
+func scrapeFeeds(s *State, userId uuid.UUID) error {
+	nextFeed, err := s.db.GetNextFeedToFetch(context.Background(), userId)
 	if err != nil {
 		return fmt.Errorf("unable to get next feed to scrape, %w", err)
 	}
