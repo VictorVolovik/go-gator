@@ -23,13 +23,12 @@ func handleListFollowed(s *State, cmd Command, user database.User) error {
 	}
 
 	fmt.Printf("Feeds followed by %s:\n", user.Name)
+	fmt.Println("------")
 
 	for _, feed := range feedFollows {
-		fmt.Println("------")
 		fmt.Println(feed.FeedName)
+		fmt.Println("------")
 	}
-
-	fmt.Println("------")
 
 	return nil
 }
