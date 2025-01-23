@@ -50,6 +50,7 @@ func main() {
 	commands.register("follow", middlewareLoggedIn(handleFollow))
 	commands.register("following", middlewareLoggedIn(handleListFollowed))
 	commands.register("unfollow", middlewareLoggedIn(handleUnfollow))
+	commands.register("browse", handleBrowse)
 
 	args := os.Args
 
@@ -82,7 +83,10 @@ func middlewareLoggedIn(handler func(s *State, cmd Command, user database.User) 
 			return fmt.Errorf("unable to get current user info, %w", err)
 		}
 
-		handler(s, cmd, user)
+		err = handler(s, cmd, user)
+		if err != nil {
+			return err
+		}
 
 		return nil
 	}

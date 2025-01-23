@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"VictorVolovik/go-gator/internal/database"
 	"VictorVolovik/go-gator/internal/rss"
 )
 
@@ -69,7 +70,14 @@ func scrapeFeeds(s *State) error {
 	fmt.Println("------")
 
 	for _, post := range feedData.Channel.Items {
-		fmt.Printf("Post title: %s\n", post.Title)
+		s.db.CreatePost(context.Background(), database.CreatePostParams{
+			Url:         post.Link,
+			Title:       post.Title,
+			Description: post.Description,
+			PublishedAt: post.PubDate,
+			FeedID:      nextFeed.ID,
+		})
+		fmt.Printf("Post saved: %s\n", post.Title)
 		fmt.Println("------")
 	}
 
