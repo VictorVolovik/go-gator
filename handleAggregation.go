@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -33,7 +35,10 @@ func handleAggregation(s *State, cmd Command, user database.User) error {
 	defer ticker.Stop()
 
 	if err := scrapeFeeds(s, user.ID); err != nil {
-		fmt.Printf("Error fetching feed: %v\n", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return fmt.Errorf("no feeds to fetch found")
+		}
+		fmt.Printf("error fetching feed: %v\n", err)
 	}
 
 	for {
@@ -43,7 +48,10 @@ func handleAggregation(s *State, cmd Command, user database.User) error {
 			return nil
 		case <-ticker.C:
 			if err := scrapeFeeds(s, user.ID); err != nil {
-				fmt.Printf("Error fetching feed: %v\n", err)
+				if errors.Is(err, sql.ErrNoRows) {
+					return fmt.Errorf("no feeds to fetch found")
+				}
+				fmt.Printf("rror fetching feed: %v\n", err)
 			}
 		}
 	}
@@ -52,6 +60,9 @@ func handleAggregation(s *State, cmd Command, user database.User) error {
 func scrapeFeeds(s *State, userId uuid.UUID) error {
 	nextFeed, err := s.db.GetNextFeedToFetch(context.Background(), userId)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return sql.ErrNoRows
+		}
 		return fmt.Errorf("unable to get next feed to scrape, %w", err)
 	}
 
